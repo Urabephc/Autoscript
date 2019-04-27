@@ -366,8 +366,13 @@ sed -i $MYIP2 /etc/iptables.up.rules;
 iptables-restore < /etc/iptables.up.rules
 
 # Configure Nginx
-sed -i 's/\/var\/www\/html;/\/home\/vps\/public_html\/;/g' /etc/nginx/sites-enabled/default
-cp /var/www/html/index.nginx-debian.html /home/vps/public_html/index.html
+useradd -m vps
+mkdir -p /home/vps/public_html
+rm /home/vps/public_html/index.html
+rm /home/vps/public_html/index.php
+echo "<?php phpinfo() ?>" > /home/vps/public_html/info.php
+chown -R www-data:www-data /home/vps/public_html
+chmod -R g+rw /home/vps/public_html 
 
 apt-get -y install nginx php7 php7.0-fpm php7-cli php7-mysql php7-mcrypt
 rm /etc/nginx/sites-enabled/default
