@@ -51,7 +51,7 @@ echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 stretch main" > /e
 #Requirement
 apt update
 apt upgrade -y
-apt install openvpn nginx php5-fpm stunnel4 squid3 dropbear easy-rsa vnstat ufw build-essential fail2ban zip -y
+apt install openvpn nginx php7.0-fpm stunnel4 squid3 dropbear easy-rsa vnstat ufw build-essential fail2ban zip -y
 
 # initializing var
 MYIP=`ifconfig eth0 | awk 'NR==2 {print $2}'`
@@ -297,7 +297,7 @@ client = no
 
 [openvpn]
 accept = 587
-connect = 127.0.0.1:1147
+connect = 127.0.0.1:1194
 cert = /etc/stunnel/stunnel.pem
 
 [dropbear]
@@ -374,7 +374,7 @@ echo "<?php phpinfo() ?>" > /home/vps/public_html/info.php
 chown -R www-data:www-data /home/vps/public_html
 chmod -R g+rw /home/vps/public_html 
 
-apt-get -y install nginx php5 php5-fpm php5-cli php5-mysql php5-mcrypt
+apt-get -y install nginx php7.0 php7.0-fpm php7.0-cli php7.0-mysql php7.0-mcrypt
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
 mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup 
@@ -382,7 +382,7 @@ mv /etc/nginx/conf.d/vps.conf /etc/nginx/conf.d/vps.conf.backup
 wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/nginx.conf" 
 wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/vps.conf" 
 sed -i 's/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php5/fpm/php.ini 
-sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php5/fpm/pool.d/www.conf
+sed -i 's/listen = \/var\/run\/php7.0-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php7.0/fpm/pool.d/www.conf
 
 # Create and Configure rc.local
 cat > /etc/rc.local <<-END
@@ -417,7 +417,7 @@ vnstat -u -i eth0
 apt-get -y autoremove
 chown -R www-data:www-data /home/vps/public_html
 service nginx start
-service php5-fpm start
+service php7.0-fpm start
 service vnstat restart
 service openvpn restart
 service dropbear restart
