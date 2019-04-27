@@ -417,7 +417,7 @@ vnstat -u -i eth0
 apt-get -y autoremove
 chown -R www-data:www-data /home/vps/public_html
 service nginx start
-service php7.0-fpm start
+service php5-fpm start
 service vnstat restart
 service openvpn restart
 service dropbear restart
