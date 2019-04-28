@@ -369,15 +369,15 @@ iptables-restore < /etc/iptables.up.rules
 sed -i 's/\/var\/www\/html;/\/home\/vps\/public_html\/;/g' /etc/nginx/sites-enabled/default
 cp /var/www/html/index.nginx-debian.html /home/vps/public_html/index.html
 
-apt-get -y install nginx php7 php7.0-fpm php7-cli php7-mysql php7-mcrypt
-rm /etc/nginx/sites-enabled/default
-rm /etc/nginx/sites-available/default
+apt-get -y install nginx php7.0 php7.0-fpm php7.0-cli php7.0-mysql php7.0-mcrypt
+
+
 mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup 
 mv /etc/nginx/conf.d/vps.conf /etc/nginx/conf.d/vps.conf.backup 
 wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/nginx.conf" 
 wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/vps.conf" 
-sed -i 's/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php7/fpm/php.ini 
-sed -i 's/listen = \/var\/run\/php7.0-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php7/fpm/pool.d/www.conf
+sed -i 's/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/7.0/fpm/php.ini 
+sed -i 's/listen = \/var\/run\/php7.0-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php7.0/fpm/pool.d/www.conf
 
 # Create and Configure rc.local
 cat > /etc/rc.local <<-END
