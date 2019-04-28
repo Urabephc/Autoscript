@@ -44,7 +44,7 @@ sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 143"/g' /etc/default/drop
 echo "/bin/false" >> /etc/shells
 echo "/usr/sbin/nologin" >> /etc/shells
 
-# install squid
+# install squid3
 cat > /etc/squid/squid.conf <<-END
 acl localhost src 127.0.0.1/32 ::1
 acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
