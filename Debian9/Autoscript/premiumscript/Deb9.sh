@@ -415,6 +415,6 @@ echo ""  | tee -a log-install.txt
 echo "   - Webmin                  : http://$MYIP:10000/"  | tee -a log-install.txt
 echo ""
 echo "------------------------------ Modified by urabe -----------------------------"
-echo "-----Rebooting your VPS -----"
-sleep 5
-reboot
+
+
+
