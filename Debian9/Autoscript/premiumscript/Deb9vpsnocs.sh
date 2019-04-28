@@ -76,6 +76,15 @@ sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
 rm /root/webmin_1.801_all.deb
 service webmin restart
 
+# install webserver
+cd
+rm /etc/nginx/sites-enabled/default
+rm /etc/nginx/sites-available/default
+wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/nginx.conf"
+mkdir -p /home/vps/public_html
+echo "<pre>Setup by urabe</pre>" > /home/vps/public_html/index.html
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/vps.conf"
+
 # install screenfetch
 cd
 wget -O /usr/bin/screenfetch "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/screenfetch.sh"
