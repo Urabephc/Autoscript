@@ -51,7 +51,7 @@ echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 stretch main" > /e
 #Requirement
 apt update
 apt upgrade -y
-apt install openvpn nginx php7.0-fpm stunnel4 squid3 dropbear easy-rsa vnstat ufw build-essential fail2ban zip -y
+apt install openvpn nginx php-fpm stunnel4 squid3 dropbear easy-rsa vnstat ufw build-essential fail2ban zip -y
 
 # initializing var
 MYIP=`ifconfig eth0 | awk 'NR==2 {print $2}'`
@@ -375,13 +375,13 @@ echo "<pre>Setup by urabe</pre>" > /home/vps/public_html/index.html
 wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/vps.conf"
 service nginx restart
 
-apt-get -y install nginx php7.0 php7.0-fpm php7.0-cli php7.0-mysql php7.0-mcrypt
+apt-get -y install nginx php php-fpm php-cli php-mysql php-mcrypt
 mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup 
 mv /etc/nginx/conf.d/vps.conf /etc/nginx/conf.d/vps.conf.backup 
 wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/nginx.conf" 
 wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/vps.conf" 
-sed -i 's/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/7.0/fpm/php.ini 
-sed -i 's/listen = \/var\/run\/php\/php7.0-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php/7.0/fpm/pool.d/www.conf
+sed -i 's/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php-fpm/php.ini 
+sed -i 's/listen = \/var\/run\/php-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php-fpm/pool.d/www.conf
 
 useradd -m vps
 mkdir -p /home/vps/public_html
