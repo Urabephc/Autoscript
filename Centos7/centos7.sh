@@ -141,6 +141,36 @@ chmod -R +rx /home/vps
 systemctl restart php-fpm
 systemctl restart nginx
 
+# install openvpn
+wget -O /etc/openvpn/openvpn.tar "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/openvpn-centos.tar"
+cd /etc/openvpn/
+tar xf openvpn.tar
+wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/1194-centos.conf"
+if [ "$OS" == "x86_64" ]; then
+  wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/1194-centos64.conf"
+fi
+wget -O /etc/iptables.up.rules "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/iptables.up.rules"
+sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
+sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.d/rc.local
+MYIP=`dig +short myip.opendns.com @resolver1.opendns.com`;
+MYIP2="s/xxxxxxxxx/$MYIP/g";
+sed -i $MYIP2 /etc/iptables.up.rules;
+sed -i 's/venet0/eth0/g' /etc/iptables.up.rules
+iptables-restore < /etc/iptables.up.rules
+sysctl -w net.ipv4.ip_forward=1
+sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.conf
+systemctl restart openvpn
+systemctl enable openvpn
+cd
+
+# configure openvpn client config
+cd /etc/openvpn/
+wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/open-vpn.conf"
+sed -i $MYIP2 /etc/openvpn/client.ovpn;
+cp client.ovpn /home/vps/public_html/
+cd
+
+
 # install mrtg
 cd /etc/snmp/
 wget -O /etc/snmp/snmpd.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Centos7/snmpd.conf"
@@ -224,6 +254,7 @@ ln -fs /usr/share/zoneinfo/Asia/Philippines /etc/localtime
 # finalisasi
 chown -R nginx:nginx /home/vps/public_html
 systemctl restart nginx
+systemctl restart openvpn
 systemctl restart php-fpm
 systemctl restart vnstat
 systemctl restart snmpd
