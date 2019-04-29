@@ -154,7 +154,7 @@ echo "screenfetch" >> .bash_profile
 
 # install webserver
 cd
-yum -y install nginx
+yum -y install nginx php php-fpm php-cli php-mysql php-mcrypt
 cat > /etc/nginx/nginx.conf <<END3
 user www-data;
 
