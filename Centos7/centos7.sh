@@ -173,7 +173,8 @@ systemctl restart crond
 clear
 echo "Setup By urabe" | tee log-install.txt
 echo "===============================================" | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
+echo "Premium Script Information"  | tee -a log-install.txt
+echo "   Type menu to display the command lists"  | tee -a log-install.txt
 echo "Service"  | tee -a log-install.txt
 echo "-------"  | tee -a log-install.txt
 echo "OpenSSH  : 22, 444"  | tee -a log-install.txt
