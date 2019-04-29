@@ -158,6 +158,16 @@ wget -O about "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debi
 
 echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
 
+chmod +x menu
+chmod +x usernewchmod +x trial
+chmod +x delete
+chmod +x check
+chmod +x member
+chmod +x restart
+chmod +x speedtest
+chmod +x info
+chmod +x about
+
 # cron
 systemctl restart crond
 systemctl enable crond
