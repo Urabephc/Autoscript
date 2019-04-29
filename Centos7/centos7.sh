@@ -104,11 +104,11 @@ systemctl restart sshd
 systemctl enable sshd
 
 # install dropbear
-
-yum -y install dropbear 
-wget -O /etc/sysconfig/dropbear "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Centos7/dropbear.conf"
-systemctl restart dropbear
-systemctl enable dropbear
+yum -y install dropbear
+echo "OPTIONS=\"-p 109 -p 110 -p 143\"" > /etc/sysconfig/dropbear
+echo "/bin/false" >> /etc/shells
+service dropbear restart
+chkconfig dropbear on
 
 # install squid
 yum -y install squid
