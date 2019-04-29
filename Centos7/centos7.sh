@@ -144,7 +144,7 @@ systemctl restart webmin
 systemctl enable webmin
 
 # download script
-cd /usr/bin
+cd
 wget -O menu "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/menu.sh"
 wget -O usernew "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/usernew.sh"
 wget -O trial "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/trial.sh"
