@@ -88,34 +88,250 @@ chmod -R +rx /home/vps
 systemctl restart php-fpm
 systemctl restart nginx
 
-# install openvpn
-wget -O /etc/openvpn/openvpn.tar "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/openvpn-centos.tar"
-cd /etc/openvpn/
-tar xf openvpn.tar
-wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/1194-centos.conf"
-if [ "$OS" == "x86_64" ]; then
-  wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/1194-centos64.conf"
-fi
-wget -O /etc/iptables.up.rules "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/iptables.up.rules"
-sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
-sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.d/rc.local
-MYIP=`dig +short myip.opendns.com @resolver1.opendns.com`;
-MYIP2="s/xxxxxxxxx/$MYIP/g";
-sed -i $MYIP2 /etc/iptables.up.rules;
-sed -i 's/venet0/eth0/g' /etc/iptables.up.rules
-iptables-restore < /etc/iptables.up.rules
-sysctl -w net.ipv4.ip_forward=1
-sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.conf
-systemctl restart openvpn
-systemctl enable openvpn
-cd
+#install OpenVPN
+cp -r /usr/share/easy-rsa/ /etc/openvpn
+mkdir /etc/openvpn/easy-rsa/keys
 
-# configure openvpn client config
-cd /etc/openvpn/
-wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/open-vpn.conf"
-sed -i $MYIP2 /etc/openvpn/client.ovpn;
-cp client.ovpn /home/vps/public_html/
+# replace bits
+sed -i 's|export KEY_COUNTRY="US"|export KEY_COUNTRY="PH"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_PROVINCE="CA"|export KEY_PROVINCE="Rizal"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_CITY="SanFrancisco"|export KEY_CITY="Antipolo"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_ORG="Fort-Funston"|export KEY_ORG="Urabe"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_EMAIL="me@myhost.mydomain"|export KEY_EMAIL="urabevpn@gmail.com"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_OU="MyOrganizationalUnit"|export KEY_OU="urabevpn"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_NAME="EasyRSA"|export KEY_NAME="urabevpn"|' /etc/openvpn/easy-rsa/vars
+sed -i 's|export KEY_OU=changeme|export KEY_OU=urabevpn|' /etc/openvpn/easy-rsa/vars
+#Create Diffie-Helman Pem
+openssl dhparam -out /etc/openvpn/dh2048.pem 2048
+# Create PKI
+cd /etc/openvpn/easy-rsa
+cp openssl-1.0.0.cnf openssl.cnf
+. ./vars
+./clean-all
+export EASY_RSA="${EASY_RSA:-.}"
+"$EASY_RSA/pkitool" --initca $*
+# create key server
+export EASY_RSA="${EASY_RSA:-.}"
+"$EASY_RSA/pkitool" --server server
+# setting KEY CN
+export EASY_RSA="${EASY_RSA:-.}"
+"$EASY_RSA/pkitool" client
 cd
+#cp /etc/openvpn/easy-rsa/keys/{server.crt,server.key} /etc/openvpn
+cp /etc/openvpn/easy-rsa/keys/server.crt /etc/openvpn/server.crt
+cp /etc/openvpn/easy-rsa/keys/server.key /etc/openvpn/server.key
+cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca.crt
+chmod +x /etc/openvpn/ca.crt
+
+# Setting Server
+tar -xzvf /root/plugin.tgz -C /usr/lib/openvpn/
+chmod +x /usr/lib/openvpn/*
+cat > /etc/openvpn/server.conf <<-END
+port 1194
+proto tcp
+dev tun
+ca ca.crt
+cert server.crt
+key server.key
+dh dh2048.pem
+verify-client-cert none
+username-as-common-name
+plugin /usr/lib/openvpn/plugins/openvpn-plugin-auth-pam.so login
+server 192.168.10.0 255.255.255.0
+ifconfig-pool-persist ipp.txt
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
+push "route-method exe"
+push "route-delay 2"
+socket-flags TCP_NODELAY
+push "socket-flags TCP_NODELAY"
+keepalive 10 120
+comp-lzo
+user nobody
+group nogroup
+persist-key
+persist-tun
+status openvpn-status.log
+log openvpn.log
+verb 3
+ncp-disable
+cipher none
+auth none
+
+END
+systemctl start openvpn@server
+#Create OpenVPN Config
+mkdir -p /home/vps/public_html
+cat > /home/vps/public_html/client.ovpn <<-END
+# Created by urabe
+auth-user-pass
+client
+dev tun
+proto tcp
+remote $MYIP 1194
+persist-key
+persist-tun
+pull
+resolv-retry infinite
+nobind
+user nobody
+comp-lzo
+remote-cert-tls server
+verb 3
+mute 2
+connect-retry 5 5
+connect-retry-max 8080
+mute-replay-warnings
+redirect-gateway def1
+script-security 2
+cipher none
+auth none
+http-proxy $MYIP 8080
+http-proxy-option CUSTOM-HEADER CONNECT HTTP/1.1
+http-proxy-option CUSTOM-HEADER Host weixin.qq.cn
+http-proxy-option CUSTOM-HEADER X-Forward-Host weixin.qq.cn
+http-proxy-option CUSTOM-HEADER Connection: Keep-Alive
+http-proxy-option CUSTOM-HEADER Proxy-Connection: keep-alive
+END
+echo '<ca>' >> /home/vps/public_html/client.ovpn
+cat /etc/openvpn/ca.crt >> /home/vps/public_html/client.ovpn
+echo '</ca>' >> /home/vps/public_html/client.ovpn
+
+cat > /home/vps/public_html/OpenVPN-Stunnel.ovpn <<-END
+
+
+# Created by urabe
+auth-user-pass
+client
+dev tun
+proto tcp
+remote 127.0.0.1 1194
+route $MYIP 255.255.255.255 net_gateway
+persist-key
+persist-tun
+pull
+resolv-retry infinite
+nobind
+user nobody
+comp-lzo
+remote-cert-tls server
+verb 3
+mute 2
+connect-retry 5 5
+connect-retry-max 8080
+mute-replay-warnings
+redirect-gateway def1
+script-security 2
+cipher none
+auth none
+END
+echo '<ca>' >> /home/vps/public_html/OpenVPN-Stunnel.ovpn
+cat /etc/openvpn/ca.crt >> /home/vps/public_html/OpenVPN-Stunnel.ovpn
+echo '</ca>' >> /home/vps/public_html/OpenVPN-Stunnel.ovpn
+
+cat > /home/vps/public_html/stunnel.conf <<-END
+client = yes
+debug = 6
+[openvpn]
+accept = 127.0.0.1:1194
+connect = $MYIP:587
+TIMEOUTclose = 0
+verify = 0
+sni = m.facebook.com
+END
+
+# Configure Stunnel
+sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
+openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -sha256 -subj '/CN=127.0.0.1/O=localhost/C=PH' -keyout /etc/stunnel/stunnel.pem -out /etc/stunnel/stunnel.pem
+cat > /etc/stunnel/stunnel.conf <<-END
+sslVersion = all
+pid = /stunnel.pid
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+client = no
+[openvpn]
+accept = 587
+connect = 127.0.0.1:1194
+cert = /etc/stunnel/stunnel.pem
+[dropbear]
+accept = 443
+connect = 127.0.0.1:442
+cert = /etc/stunnel/stunnel.pem
+
+END
+
+#Setting UFW
+ufw allow ssh
+ufw allow 1194/tcp
+sed -i 's|DEFAULT_INPUT_POLICY="DROP"|DEFAULT_INPUT_POLICY="ACCEPT"|' /etc/default/ufw
+sed -i 's|DEFAULT_FORWARD_POLICY="DROP"|DEFAULT_FORWARD_POLICY="ACCEPT"|' /etc/default/ufw
+
+# set ipv4 forward
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sed -i 's|#net.ipv4.ip_forward=1|net.ipv4.ip_forward=1|' /etc/sysctl.conf
+
+#Setting IPtables
+cat > /etc/iptables.up.rules <<-END
+*nat
+:PREROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -j SNAT --to-source xxxxxxxxx
+-A POSTROUTING -o eth0 -j MASQUERADE
+-A POSTROUTING -s 192.168.10.0/24 -o eth0 -j MASQUERADE
+COMMIT
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:fail2ban-ssh - [0:0]
+-A INPUT -p tcp -m multiport --dports 22 -j fail2ban-ssh
+-A INPUT -p ICMP --icmp-type 8 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 53 -j ACCEPT
+-A INPUT -p tcp --dport 22  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 80  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 143  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 442  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 443  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 587  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 1194  -m state --state NEW -j ACCEPT
+-A INPUT -p udp --dport 1194  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 3128  -m state --state NEW -j ACCEPT
+-A INPUT -p udp --dport 3128  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 8080  -m state --state NEW -j ACCEPT
+-A INPUT -p udp --dport 8080  -m state --state NEW -j ACCEPT 
+-A INPUT -p tcp --dport 10000  -m state --state NEW -j ACCEPT
+-A fail2ban-ssh -j RETURN
+COMMIT
+*raw
+:PREROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+*mangle
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+COMMIT
+END
+sed -i $MYIP2 /etc/iptables.up.rules;
+iptables-restore < /etc/iptables.up.rules
+
+# Create and Configure rc.local
+cat > /etc/rc.local <<-END
+#!/bin/sh -e
+exit 0
+END
+chmod +x /etc/rc.local
+sed -i '$ i\echo "nameserver 8.8.8.8" > /etc/resolv.conf' /etc/rc.local
+sed -i '$ i\echo "nameserver 8.8.4.4" >> /etc/resolv.conf' /etc/rc.local
+sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
+
+# compress configs
+cd /home/vps/public_html
+zip configs.zip client.ovpn OpenVPN-Stunnel.ovpn stunnel.conf
 
 # install badvpn
 wget -O /usr/bin/badvpn-udpgw "https://raw.github.com/arieonline/autoscript/master/conf/badvpn-udpgw"
@@ -207,7 +423,7 @@ ln -fs /usr/share/zoneinfo/Asia/Philippines /etc/localtime
 # finalisasi
 chown -R nginx:nginx /home/vps/public_html
 systemctl restart nginx
-systemctl restart openvpn
+systemctl start openvpn@server
 systemctl restart php-fpm
 systemctl restart vnstat
 systemctl restart snmpd
