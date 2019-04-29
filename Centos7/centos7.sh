@@ -143,30 +143,11 @@ rpm -U webmin-1.890-1.noarch.rpm
 systemctl restart webmin
 systemctl enable webmin
 
+
 # download script
-cd /usr/local/bin
-wget -O menu "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/menu.sh"
-wget -O usernew "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/usernew.sh"
-wget -O trial "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/trial.sh"
-wget -O delete "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/delete.sh"
-wget -O check "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/user-login.sh"
-wget -O member "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/user-list.sh"
-wget -O restart "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/restart.sh"
-wget -O speedtest "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/speedtest_cli.py"
-wget -O info "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/info.sh"
-wget -O about "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/about.sh"
+cd
+wget https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/install-premiumscript.sh -O - -o /dev/null|sh
 
-echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
-
-chmod +x menu
-chmod +x usernewchmod +x trial
-chmod +x delete
-chmod +x check
-chmod +x member
-chmod +x restart
-chmod +x speedtest
-chmod +x info
-chmod +x about
 
 # cron
 systemctl restart crond
