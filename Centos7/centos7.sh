@@ -100,8 +100,8 @@ cd
 sed -i '/Port 22/a Port 444' /etc/ssh/sshd_config
 sed -i '/Port 22/a Port  90' /etc/ssh/sshd_config
 sed -i 's/#Port 22/Port  22/g' /etc/ssh/sshd_config
-systemctl restart ssh
-systemctl enable ssh
+systemctl restart sshd
+systemctl enable sshd
 
 # install dropbear
 
