@@ -107,8 +107,8 @@ systemctl enable sshd
 yum -y install dropbear
 echo "OPTIONS=\"-p 109 -p 110 -p 143\"" > /etc/sysconfig/dropbear
 echo "/bin/false" >> /etc/shells
-service dropbear restart
-chkconfig dropbear on
+service start dropbear
+chkconfig enable dropbear
 
 # install squid
 yum -y install squid
