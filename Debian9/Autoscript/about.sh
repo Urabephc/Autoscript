@@ -5,6 +5,7 @@ clear
 echo -e "Script Auto Install SSH,Dropbear,SSL,Squid,OpenVPN,OpenVPN-Stunnel" | lolcat 
 echo -e ""
 echo -e "For Debian 9 32 bit & 64 bit"
+echo -e "For Centos 6 32 bit & 64 bit"
 echo -e "For VPS with KVM and VMWare virtualization"
 echo -e ""
 echo -e "Original script by :"
