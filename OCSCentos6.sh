@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Script By Urabe
 #Initializing var
 if [[ "$USER" != 'root' ]]; then
 	echo "Run this script with root privileges."
@@ -31,10 +31,10 @@ echo ""
 echo ""
 echo "Configure Database OCS Panel Name"
 echo "(Make sure the database name contains no spaces, symbols, or special characters.)"
-read -p "Database Name    : " -e -i OCSShigeno NamaDatabase
+read -p "Database Name    : " -e -i OCSurabe NamaDatabase
 echo "Input MySQL Password:"
 echo "(Use different Password for your database, dont use VPS password.)"
-read -p "Database Password: " -e -i shigeno PasswordDatabase
+read -p "Database Password: " -e -i Passurabe PasswordDatabase
 echo ""
 echo "All questions have been answered."
 read -n1 -r -p "Press any key to continue ..."
@@ -190,7 +190,7 @@ chkconfig php-fpm on
 service php-fpm restart
 service nginx restart
 
-#Install zip shigeno Script
+#Install zip urabe Script
 yum -y install zip unzip
 cd /home/vps/public_html
 wget https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/OCSPanelCentos6.zip
@@ -248,9 +248,9 @@ echo "Password: (Use the password you have input in the browser)"    | tee -a lo
 echo "" 																| tee -a log-install-ocspanel.txt
 echo "Installatin Log: /root/log-install-ocspanel.txt" 				| tee -a log-install-ocspanel.txt
 echo "--------------------------------------------------------------------------------"| tee -a log-install-ocspanel.txt
-echo "Copyright https://www.HostingTermurah.net"  						| tee -a log-install-ocspanel.txt
-echo "Script Created By Steven Indarto(fb.com/stevenindarto2)"   		| tee -a log-install-ocspanel.txt
-echo "Modified by shigeno"                      	                 	| tee -a log-install-ocspanel.txt
+echo "Copyright 2019"  						| tee -a log-install-ocspanel.txt
+echo "Script Created By urabe ogf PHCorner.net"   		| tee -a log-install-ocspanel.txt
+echo "Modified by urabe"                      	                 	| tee -a log-install-ocspanel.txt
 echo "--------------------------------------------------------------------------------"| tee -a log-install-ocspanel.txt
 echo ""
 echo ""
