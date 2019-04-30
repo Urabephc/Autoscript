@@ -96,7 +96,7 @@ chkconfig vnstat on
 
 # install screenfetch
 cd
-wget -O /usr/bin/screenfetch "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/screenfetch"
+wget -O /usr/bin/screenfetch "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Centos7/screenfetch"
 chmod +x /usr/bin/screenfetch
 echo "clear" >> .bash_profile
 echo "screenfetch" >> .bash_profile
