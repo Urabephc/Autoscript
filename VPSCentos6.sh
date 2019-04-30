@@ -1,6 +1,6 @@
 #!/bin/bash
-# Created by https://www.hostingtermurah.net
-# Modified by shigeno
+# Created by Urabe of PHCorner
+# Script by urabe
 
 #Requirement
 if [ ! -e /usr/bin/curl ]; then
@@ -146,7 +146,7 @@ http {
 END3
 sed -i 's/www-data/nginx/g' /etc/nginx/nginx.conf
 mkdir -p /home/vps/public_html
-wget -O /home/vps/public_html/index.html "http://script.hostingtermurah.net/repo/index.html"
+wget -O /home/vps/public_html/index.html "https://raw.githubusercontent.com/Urabephc/Autoscript/master/index.html"
 echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
 rm /etc/nginx/conf.d/*
 args='$args'
@@ -325,7 +325,7 @@ rm -rf /root/master.zip
 
 # setting banner
 rm /etc/issue.net
-wget -O /etc/issue.net "https://raw.githubusercontent.com/daybreakersx/premscript/master/issue.net"
+wget -O /etc/issue.net "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/issue.net"
 sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
 sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
 service ssh restart
