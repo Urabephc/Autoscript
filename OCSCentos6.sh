@@ -101,8 +101,7 @@ echo "$so2"
 #Install Webserver
 yum -y install nginx php php-fpm php-cli php-mysql php-mcrypt
 rm -f /usr/share/nginx/html/index.html
-mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
-mv /etc/nginx/conf.d/vps.conf /etc/nginx/conf.d/vps.conf.backup
+
 cat > /etc/nginx/nginx.conf <<END3
 user www-data;
 
