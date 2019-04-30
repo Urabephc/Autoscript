@@ -95,6 +95,12 @@ sed -i 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
 sed -i -e "/^\[remi\]/,/^\[.*\]/ s|^\(enabled[ \t]*=[ \t]*0\\)|enabled=1|" /etc/yum.repos.d/remi.repo
 rm -f *.rpm
 
+# remove unused
+yum -y remove sendmail;
+yum -y remove httpd;
+yum -y remove cyrus-sasl
+
+
 # update
 yum -y update
 yum -y groupinstall 'Development Tools' && yum -y install cmake && yum -y install expect-devel
@@ -238,6 +244,13 @@ chkconfig php-fpm on
 service php-fpm restart
 service nginx restart
 
+# setting vnstat
+vnstat -u -i eth0
+echo "MAILTO=root" > /etc/cron.d/vnstat
+echo "*/5 * * * * root /usr/sbin/vnstat.cron" >> /etc/cron.d/vnstat
+service vnstat restart
+chkconfig vnstat on
+
 # install screenfetch
 cd
 wget -O /usr/bin/screenfetch "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/screenfetch"
@@ -340,6 +353,14 @@ sed -i $MYIP2 /etc/squid/squid.conf;
 service squid restart
 chkconfig squid on
 
+# install stunnel
+yum install stunnel
+wget -O /etc/pki/tls/certs/stunnel.pem "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/stunnel.pem"
+wget -O /etc/stunnel/stunnel.conf "https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/stunnel.conf"
+mkdir /var/run/stunnel
+chown nobody:nobody /var/run/stunnel
+stunnel /etc/stunnel/stunnel.conf
+
 # install ddos deflate
 cd
 yum -y install dnsutils dsniff
@@ -395,6 +416,9 @@ END
 sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
 sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.d/rc.local
 iptables-restore < /etc/iptables.up.rules
+
+# install bmon
+yum -y install bmon
 
 # download script
 cd /usr/local/bin
@@ -508,7 +532,7 @@ echo "" 																| tee -a log-install-ocspanel.txt
 echo "Installatin Log: /root/log-install-ocspanel.txt" 				| tee -a log-install-ocspanel.txt
 echo "--------------------------------------------------------------------------------"| tee -a log-install-ocspanel.txt
 echo "Copyright 2019"  						| tee -a log-install-ocspanel.txt
-echo "Script Created By urabe ogf PHCorner.net"   		| tee -a log-install-ocspanel.txt
+echo "Script Created By urabe of PHCorner.net"   		| tee -a log-install-ocspanel.txt
 echo "Modified by urabe"                      	                 	| tee -a log-install-ocspanel.txt
 echo "--------------------------------------------------------------------------------"| tee -a log-install-ocspanel.txt
 echo ""
