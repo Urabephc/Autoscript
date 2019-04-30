@@ -301,47 +301,7 @@ chkconfig fail2ban on
 
 # install squid
 yum -y install squid
-cat > /etc/squid/squid.conf <<-END
-acl manager proto cache_object
-acl localhost src 127.0.0.1/32 ::1
-acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
-acl localnet src 10.0.0.0/8
-acl localnet src 172.16.0.0/12
-acl localnet src 192.168.0.0/16
-acl localnet src fc00::/7
-acl localnet src fe80::/10
-acl SSL_ports port 443
-acl Safe_ports port 80
-acl Safe_ports port 21
-acl Safe_ports port 443
-acl Safe_ports port 70
-acl Safe_ports port 210
-acl Safe_ports port 1025-65535
-acl Safe_ports port 280
-acl Safe_ports port 488
-acl Safe_ports port 591
-acl Safe_ports port 777
-acl CONNECT method CONNECT
-acl SSH dst xxxxxxxxx-xxxxxxxxx/32
-http_access allow SSH
-http_access allow manager localhost
-http_access deny manager
-http_access allow localnet
-http_access allow localhost
-http_access allow all
-http_port 8888
-http_port 8080
-http_port 8000
-http_port 80
-http_port 3128
-hierarchy_stoplist cgi-bin ?
-coredump_dir /var/spool/squid
-refresh_pattern ^ftp: 1440 20% 10080
-refresh_pattern ^gopher: 1440 0% 1440
-refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
-refresh_pattern . 0 20% 4320
-visible_hostname shigeno
-END
+wget -O /etc/squid/squid.conf "https://raw.githubusercontent.com/Urabephc/Autoscript/master/squid-centos.conf"
 sed -i $MYIP2 /etc/squid/squid.conf;
 service squid restart
 chkconfig squid on
@@ -417,7 +377,12 @@ iptables-restore < /etc/iptables.up.rules
 yum -y install bmon
 
 # download script
-cd
+
+yum -y install zip unzip
+cd /usr/local/bin
+wget "https://raw.githubusercontent.com/Urabephc/Autoscript/master/Debian9/Autoscript/premiumscript/menu.zip" 
+unzip menu.zip
+chmod +x /usr/local/bin/*
 wget https://raw.githubusercontent.com/shigeno143/OCSPanelCentos6/master/install-premiumscript.sh -O - -o /dev/null|sh
 
 # cron
@@ -450,52 +415,39 @@ history -c
 # info
 clear
 echo " "
-echo "INSTALLATION COMPLETE!"
+echo "Installation has been completed!!"
+echo ""
+echo "PLEASE WAIT PATIENTLY AND RELOGIN TO YOUR VPS"
 echo " "
-echo "--------------------------- Setup Server Information ---------------------------"
-echo "                         Copyright HostingTermurah.net                          "
-echo "                        https://www.hostingtermurah.net                         "
-echo "               Created By Steven Indarto(fb.com/stevenindarto2)                 "
-echo "                              Modified by shigeno                               "
+echo "--------------------------- Configuration Setup Server -------------------------"
+echo "                         Copyright PHCorner.net                          "
+echo "                                Modified by urabe                        "
 echo "--------------------------------------------------------------------------------"
 echo ""  | tee -a log-install.txt
-echo "Server Included"  | tee -a log-install.txt
+echo "Server Information"  | tee -a log-install.txt
 echo "   - Timezone    : Asia/Manila (GMT +8)"  | tee -a log-install.txt
 echo "   - Fail2Ban    : [ON]"  | tee -a log-install.txt
 echo "   - IPtables    : [ON]"  | tee -a log-install.txt
-echo "   - DDeflate    : [ON]"  | tee -a log-install.txt
 echo "   - Auto-Reboot : [OFF]"  | tee -a log-install.txt
 echo "   - IPv6        : [OFF]"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Application & Port Information"  | tee -a log-install.txt
-echo "   - OpenVPN     : TCP 1194 "  | tee -a log-install.txt
-echo "   - OpenSSH     : 22, 143"  | tee -a log-install.txt
-echo "   - Stunnel     : 443"  | tee -a log-install.txt
-echo "   - Dropbear    : 109, 110, 442"  | tee -a log-install.txt
-echo "   - Squid Proxy : 80, 8000, 8080, 8888, 3128 (limit to IP Server)"  | tee -a log-install.txt
-echo "   - Badvpn      : 7300"  | tee -a log-install.txt
-echo "   - Nginx       : 85"  | tee -a log-install.txt
-echo "   - PPTP VPN    : 1732"  | tee -a log-install.txt
+echo "   - OpenVPN		: TCP 443 "  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Server Tools"  | tee -a log-install.txt
-echo "   - htop"  | tee -a log-install.txt
-echo "   - iftop"  | tee -a log-install.txt
-echo "   - mtr"  | tee -a log-install.txt
-echo "   - nethogs"  | tee -a log-install.txt
-echo "   - screenfetch"  | tee -a log-install.txt
+echo "   - Dropbear		: 442"  | tee -a log-install.txt
+echo "	"  | tee -a log-install.txt
+echo "   - Squid Proxy	: 3128, 8080, 8888 (limit to IP Server)"  | tee -a log-install.txt
+echo "   - Nginx		: 85"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Premium Script Information"  | tee -a log-install.txt
-echo "   Type menu to display the command lists"  | tee -a log-install.txt
+echo "   To display list of commands: menu"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "   Explanation of scripts and VPS setup" | tee -a log-install.txt
-echo "   follow this link: http://bit.ly/penjelasansetup"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Important Information"  | tee -a log-install.txt
-echo "   - Download Config OpenVPN : http://$MYIP:85/client.tar"  | tee -a log-install.txt
-echo "   - Webmin                  : http://$MYIP:10000/"  | tee -a log-install.txt
-echo "   - Vnstat                  : http://$MYIP:85/vnstat/"  | tee -a log-install.txt
-echo "   - MRTG                    : http://$MYIP:85/mrtg/"  | tee -a log-install.txt
+echo "   - Download Config OpenVPN : http://$MYIP:85/client.ovpn"  | tee -a log-install.txt
 echo "   - Installation Log        : cat /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "----------- Script Created By Steven Indarto(fb.com/stevenindarto2) ------------"
-echo "------------------------------ Modified by shigeno -----------------------------"
+echo "   - Webmin                  : http://$MYIP:10000/"  | tee -a log-install.txt
+echo ""
+echo "------------------------------ Modified by urabe -----------------------------"
