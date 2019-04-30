@@ -14,14 +14,14 @@ echo -e "====SSH Account Information====" | lolcat
 echo -e "Host: $IP"
 echo -e "Username: $Login "
 echo -e "Password: $Pass" 
-echo -e "Port OpenSSH: 22,444"
-echo -e "Port Dropbear: 143,3128"
+echo -e "Port OpenSSH: 22"
+echo -e "Port Dropbear: 442"
 echo -e "Port SSL: 443"
 echo -e "Port Squid: 3128,8080,80"
-echo -e "Config OpenVPN (TCP 1194): http://$IP/client.ovpn"
-echo -e "OpenVPN-Stunnel	: 587
+echo -e "Config OpenVPN (TCP 443): http://$IP/client.ovpn"
 echo -e "-----------------------------" | lolcat
 echo -e "Expiration: $exp"
 echo -e "=============================" | lolcat
 echo -e "Mod by urabe"
 echo -e ""
+
