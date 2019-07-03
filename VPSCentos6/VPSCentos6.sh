@@ -145,8 +145,8 @@ http {
 END3
 sed -i 's/www-data/nginx/g' /etc/nginx/nginx.conf
 mkdir -p /home/vps/public_html
-wget -O /home/vps/public_html/index.html "http://script.hostingtermurah.net/repo/index.html"
-echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
+wget -O /home/vps/public_html/index.html "SERVER BY URABE"
+echo ""> /home/vps/public_html/info.php
 rm /etc/nginx/conf.d/*
 args='$args'
 uri='$uri'
